@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "octelly-shell-utils"
+version = "0.1.0"
+description = "Octelly's shell utilities"
+authors = ["Octelly <octelly@owo.digital>"]
+license = "GPL-3.0-or-later"
+packages = [{ include = "octelly_shell_utils" }]
+
+[tool.poetry.scripts]
+octelly-shell-utils = 'octelly_shell_utils:app'
+
+[tool.poetry.dependencies]
+python = "^3.11"
+typer = { extras = ["all"], version = "^0.9.0" }
+survey = "^4.5.4"
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.12.0"
+isort = "^5.13.2"
+pyright = "^1.1.342"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
