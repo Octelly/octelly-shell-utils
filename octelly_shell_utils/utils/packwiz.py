@@ -3,7 +3,7 @@ from rich.progress import track, Progress, SpinnerColumn, TextColumn
 import rich.markup
 import typer
 from typing_extensions import Annotated
-from typing import List
+from typing import List, Optional
 from pathlib import Path
 import shutil
 import subprocess
@@ -55,15 +55,32 @@ def packwiz(args: List[str]):
     return process
 
 
-def guess_packwiz_path() -> Path:
+def guess_packwiz_path(path: Optional[Path] = None) -> Path:
     """
     Guess the path to the Packwiz binary
+
+    Automatically searches multiple paths if the path argument isn't specified
     """
-    path = shutil.which("packwiz")
-    if path != None:
-        return Path(path)
+
+    bin_path = shutil.which("packwiz", path=path)
+
+    # return binary path if found
+    if bin_path != None:
+        return Path(bin_path)
+
+    # search elsewhere if the path argument isn't specified
+    elif path != None:
+        if state["project_root"] != Path.cwd():
+            try:
+                return guess_packwiz_path(state["project_root"])
+            except RuntimeError:
+                pass
+
+        return guess_packwiz_path(Path.cwd())
+
+    # raise an error if binary could not be found
     else:
-        return Path("packwiz")
+        raise RuntimeError("Couldn't find Packwiz bin")
 
 
 def get_project_files() -> List[Path]:
@@ -195,7 +212,7 @@ def command(
         Path,
         typer.Option(
             envvar="PACKWIZ_EXEC",
-            help="Specify the path of the Packwiz executable, searches in PATH otherwise",
+            help="Specify the path of the Packwiz executable, searches PATH, project root and CWD by default",
             default_factory=guess_packwiz_path,
         ),
     ],
@@ -203,7 +220,7 @@ def command(
         Path,
         typer.Option(
             envvar="PACKWIZ_PROJECT",
-            help="Specify the path of the Packwiz project, defaults to CWD",
+            help="Specify the path of the Packwiz project, defaults to CWD (project's root is determined automatically)",
             default_factory=Path.cwd,
         ),
     ],
@@ -212,7 +229,6 @@ def command(
     Utilities for working with the Packwiz modpack manager
     """
 
-    state["exec"] = exec
     try:
         state["project_root"] = get_project_root(path)
     except RuntimeError:
@@ -222,3 +238,4 @@ def command(
             )
         )
         raise typer.Exit(1)
+    state["exec"] = exec

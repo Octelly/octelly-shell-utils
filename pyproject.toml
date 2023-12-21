@@ -1,10 +1,9 @@
 [tool.poetry]
-name = "octelly-shell-utils"
-version = "0.1.0"
+name = "octelly_shell_utils"
+version = "0.1.1"
 description = "Octelly's shell utilities"
 authors = ["Octelly <octelly@owo.digital>"]
 license = "GPL-3.0-or-later"
-packages = [{ include = "octelly_shell_utils" }]
 
 [tool.poetry.scripts]
 octelly-shell-utils = 'octelly_shell_utils:app'
