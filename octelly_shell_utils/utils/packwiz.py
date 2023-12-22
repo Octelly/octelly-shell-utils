@@ -227,6 +227,8 @@ def command(
 ):
     """
     Utilities for working with the Packwiz modpack manager
+
+    See https://packwiz.infra.link/ for more info
     """
 
     try:
